@@ -593,6 +593,26 @@
 
     <script>
         // 단위 작업 행 추가 함수 (체크리스트)
+        // ---------- 삭제 전 확인 (내용이 있을 때만) ----------
+        function hasUserContent(el) {
+            let has = false;
+            el.querySelectorAll('input').forEach(function (i) {
+                if (i.type === 'file' || i.type === 'checkbox' || i.type === 'radio') return;
+                if (i.type === 'number') { if (i.value && i.value.trim() !== '' && i.value !== '1') has = true; return; }
+                if (i.value && i.value.trim()) has = true;
+            });
+            el.querySelectorAll('textarea').forEach(function (t) { if (t.value && t.value.trim()) has = true; });
+            el.querySelectorAll('select').forEach(function (sl) { if (sl.value === 'O') has = true; });
+            if (el.querySelector('.single-preview img')) has = true;
+            return has;
+        }
+
+        // 비어 있으면 바로 삭제, 내용이 있으면 확인창
+        function okToRemove(el, label) {
+            if (!hasUserContent(el)) return true;
+            return confirm('🗑️ ' + label + '을(를) 삭제할까요?\n입력한 내용이 사라집니다.\n\n(저장하기 전에는 클라우드에 저장된 내용은 그대로입니다)');
+        }
+
         function addRow() {
             const tbody = document.querySelector("#checkTable tbody");
             const newRow = document.createElement("tr");
@@ -607,7 +627,9 @@
         }
 
         function removeRow(button) {
-            button.closest("tr").remove();
+            const tr = button.closest("tr");
+            if (!okToRemove(tr, '이 작업 행')) return;
+            tr.remove();
         }
 
         // 2단계 행 추가 함수
@@ -625,7 +647,9 @@
         }
 
         function removeStep2Row(button) {
-            button.closest("tr").remove();
+            const tr = button.closest("tr");
+            if (!okToRemove(tr, '이 항목')) return;
+            tr.remove();
         }
 
         // 2단계 점수 자동 계산 함수
@@ -653,7 +677,9 @@
         }
 
         function removeCauseRow(button) {
-            button.closest("tr").remove();
+            const tr = button.closest("tr");
+            if (!okToRemove(tr, '이 원인 행')) return;
+            tr.remove();
         }
 
         // 3단계 블록 추가 함수
@@ -732,7 +758,13 @@
         }
 
         function removeStep3Block(button) {
-            button.closest(".step3-block").remove();
+            const block = button.closest(".step3-block");
+            if (hasUserContent(block)) {
+                const nameInput = block.querySelector('input[type="text"]');
+                const name = nameInput && nameInput.value.trim() ? ' (작업명: ' + nameInput.value.trim() + ')' : '';
+                if (!confirm('🗑️ 3단계 평가서' + name + '를 삭제할까요?\n입력한 내용 ' + filledCount(block) + '칸(첨부 사진 포함)이 사라집니다.\n\n(저장하기 전에는 클라우드에 저장된 내용은 그대로입니다)')) return;
+            }
+            block.remove();
         }
 
         // 작업환경개선계획 행 추가 함수
@@ -758,7 +790,9 @@
         }
 
         function removeImproveRow(button) {
-            button.closest("tr").remove();
+            const tr = button.closest("tr");
+            if (!okToRemove(tr, '이 개선 행')) return;
+            tr.remove();
         }
 
         // 개별 사진 칸 미리보기 함수
