@@ -883,7 +883,7 @@
                 const np = String(remote);
                 if (!isInitialLoad && SYSTEM_PASSWORD !== null && SYSTEM_PASSWORD !== np) {
                     SYSTEM_PASSWORD = np;
-                    sessionStorage.removeItem('risk_authenticated');
+                    sessionStorage.removeItem('msd_authenticated');
                     alert('⚠️ 원격에서 비밀번호가 변경되었습니다. 다시 로그인해 주세요.');
                     showLogin();
                     return;
@@ -900,7 +900,7 @@
                 return;
             }
             if (inputPass === SYSTEM_PASSWORD) {
-                sessionStorage.setItem('risk_authenticated', 'true');
+                sessionStorage.setItem('msd_authenticated', 'true');
                 document.getElementById('login-overlay').style.display = 'none';
             } else {
                 alert('⚠️ 비밀번호가 올바르지 않습니다.');
@@ -908,7 +908,7 @@
             }
         }
 
-        if (sessionStorage.getItem('risk_authenticated') === 'true') {
+        if (sessionStorage.getItem('msd_authenticated') === 'true') {
             document.getElementById('login-overlay').style.display = 'none';
         } else {
             document.getElementById('sys-pass-input').focus();
